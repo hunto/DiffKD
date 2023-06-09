@@ -30,9 +30,11 @@ def main_1d():
     def _reshape(x):
         return x.view(x.shape[0], x.shape[1], 1, 1)
 
-    student_feat_refined, ddim_loss, teacher_feat_hidden, rec_loss = \
+    student_feat_refined, ddim_loss, teacher_feat, rec_loss = \
         diffkd(_reshape(student_feat), _reshape(teacher_feat))
-    kd_loss = F.mse_loss(student_feat_refined, teacher_feat_hidden)
+    kd_loss = F.mse_loss(student_feat_refined, teacher_feat)
+    # use KL Div loss for classification predictions
+    # kd_loss = F.kl_div(F.log_softmax(student_feat_refined, 1), F.softmax(teacher_feat, 1), reduction="batchmean")
     print(f'kd loss: {kd_loss.item():.4f}    '
           f'ddim loss: {ddim_loss.item():.4f}')
 
