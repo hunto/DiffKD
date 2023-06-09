@@ -34,7 +34,10 @@ class DiffKD(nn.Module):
         self.noise_adapter = NoiseAdapter(teacher_channels, kernel_size)
         # pipeline for denoising student feature
         self.pipeline = DDIMPipeline(self.model, self.scheduler, self.noise_adapter)
-        self.proj = nn.Conv2d(teacher_channels, teacher_channels, 1)
+        self.proj = nn.Sequential(
+            nn.Conv2d(teacher_channels, teacher_channels, 1),
+            nn.BatchNorm2d(teacher_channels)
+        )
 
     def forward(self, student_feat, teacher_feat):
         # project student feature to the same dimension as teacher feature
